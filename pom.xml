@@ -21,6 +21,7 @@
     <modules>
         <module>sample</module>
         <module>mybatis</module>
+        <module>controller</module>
     </modules>
 
     <properties>
