@@ -5,10 +5,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyValue;
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.validation.Errors;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 3. Validation, Data Binding, and Type Conversion
@@ -94,7 +99,7 @@ public class ValidationAndDataBindingAndTypeConversionTest {
      *  主要代码在 org.springframework.beans 包中
      */
 
-     /*  BeanWrapper 接口负责包装 bean ，然后进行 便捷的操作
+    /*  BeanWrapper 接口负责包装 bean ，然后进行 便捷的操作
      *      设置和获取属性
      *      获取属性的描述符
      *      支持嵌套属性操作
@@ -114,7 +119,7 @@ public class ValidationAndDataBindingAndTypeConversionTest {
      *
      */
     @Test
-    public void test02(){
+    public void test02() {
         BeanWrapperImpl beanWrapper = new BeanWrapperImpl(new Person());
 
         //设置属性
@@ -168,6 +173,101 @@ public class ValidationAndDataBindingAndTypeConversionTest {
      * 2. CustomEditorConfigurer
      * 3. PropertyEditorRegistrar
      */
+
+    /**
+     * 4. Spring Type Conversion
+     *
+     *  Spring 类型转换
+     *
+     *  Spring 3 引入了一个core.convert 提供通用类型转换系统的包。
+     *
+     *  系统定义了一个 SPI 来实现类型转换逻辑和一个 API 来在运行时执行类型转换。
+     *
+     *  可以作为 PropertyEditor 的替代方案
+     *
+     *  并且支持在任何位置使用 api 进行转换
+     *
+     *
+     *
+     */
+
+    /*
+     * 使用 Converter 接口表示 类型转换器
+     *      public interface Converter<S, T> {
+     *
+     *          T convert(S source);
+     *      }
+     *
+     * core.convert.support 包中提供了几个常见类型转换器实现。
+     *
+     */
+
+    /*
+     * 使用 ConverterFactory 代表 类型转换器工厂
+     *
+     * 它可以实现 整个类层次结构的转换，例如 枚举 到 String
+     *
+     * 父类 到 某个类型
+     */
+
+    /*
+     * GenericConverter 代表一个更复杂的 类型转换器
+     *
+     * 它先通过方法定义 可以转换的 类型
+     *
+     */
+
+    /*
+     * ConditionalGenericConverter 定义 在某些条件下 才支持的类型转换器
+     *
+     * 例如 只有类上有某个 注解时 才可以
+     */
+
+    /*
+     * ConversionService 代表使用转换器的 外部接口
+     *
+     * 通过 ConversionService 来在代码中使用 转换器
+     *
+     * 提供了 实现 GenericConversionService
+     *
+     * 通常我们在 ConversionService 中 包含  ConverterRegistry 用来注册转换器
+     *
+     * 注册 conversionService bean， 同时 注册 Converter
+     *
+<bean id="conversionService"
+        class="org.springframework.context.support.ConversionServiceFactoryBean">
+    <property name="converters">
+        <set>
+            <bean class="example.MyCustomConverter"/>
+        </set>
+    </property>
+</bean>
+     *
+     * 我们也可以将 conversionService 注入到 任何 bean 中 ，然后 直接调用 方法
+     */
+
+    /*
+     * Spring 在没有 ConversionService 注册时（bean） 使用 PropertyEditor 系统 来转换
+     *
+     */
+
+    /*
+     * 我们在代码中使用 conversionService 时，如果碰到 list 等 范型 类型，需要配合 TypeDescriptor 来明确指出类型
+     *
+     * DefaultConversionService自动注册适用于大多数环境的转换器。
+     *       This includes collection converters, scalar converters, and basic Object-to-String converters.
+     *
+     */
+    @Test
+    public void test03() {
+        DefaultConversionService cs = new DefaultConversionService();
+
+        List<Integer> input = new ArrayList<>(3);
+        cs.convert(input,
+                TypeDescriptor.forObject(input), // List<Integer> type descriptor
+                TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(String.class)));
+    }
+
 
 }
 
