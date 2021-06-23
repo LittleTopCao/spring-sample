@@ -21,6 +21,7 @@
     <modules>
         <module>sample</module>
         <module>mybatis</module>
+        <module>spring-framework-doc</module>
     </modules>
 
     <properties>
@@ -37,6 +38,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.12</version>
         </dependency>
     </dependencies>
 
