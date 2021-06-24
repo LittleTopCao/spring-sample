@@ -249,6 +249,7 @@ public class ValidationAndDataBindingAndTypeConversionTest {
     /*
      * Spring 在没有 ConversionService 注册时（bean） 使用 PropertyEditor 系统 来转换
      *
+     * 如果找到了 ConversionService bean 将使用它
      */
 
     /*
